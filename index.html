@@ -1,0 +1,1200 @@
+<title>Проклятие фараона</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Philosopher:ital,wght@0,400;0,700;1,700&display=swap">
+<style>
+/* Концепция: тёмная гробница из лазурита. Сверху липкая панель с символами, баллами и шкалой проклятия, ниже одна колонка-сцена.
+   Факелы по бокам, золото как главный акцент; чем больше ошибок, тем плотнее тьма и ярче глаза в углах. */
+:root{
+  --night:#0b0e22;
+  --night-2:#121740;
+  --stone:#171c47;
+  --stone-2:#212860;
+  --line:#3b4590;
+  --sand:#f1e6c6;
+  --sand-dim:#b7ae92;
+  --gold:#f2b632;
+  --gold-deep:#a8690f;
+  --ember:#ff7b1c;
+  --turq:#35d0b5;
+  --ruby:#f0506a;
+  --font-display:'Philosopher',Georgia,'Times New Roman',serif;
+  --font-body:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --curse:0;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--night);
+  background-image:
+    linear-gradient(180deg,rgba(11,14,34,0) 0%,rgba(11,14,34,.55) 100%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 58px);
+  background-attachment:fixed;
+  color:var(--sand);
+  font-family:var(--font-body);
+  font-size:17px;
+  line-height:1.5;
+  -webkit-tap-highlight-color:transparent;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--night-2)}
+h1,h2,p{margin:0}
+button{font:inherit;color:inherit}
+
+/* ---------- фон ---------- */
+#bg{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+#bg::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,transparent 45%,rgba(90,0,25,calc(var(--curse) * .6)) 100%);transition:background .8s}
+.torch{position:absolute;width:260px;height:360px;top:22%;background:radial-gradient(closest-side,rgba(255,150,50,.34),rgba(255,110,20,.1) 60%,transparent);animation:flick 2.6s infinite ease-in-out}
+.torch.l{left:-130px}
+.torch.r{right:-130px;animation-delay:-1.1s}
+@keyframes flick{0%,100%{opacity:.78;transform:scale(1)}25%{opacity:1;transform:scale(1.07)}55%{opacity:.7;transform:scale(.96)}80%{opacity:.95;transform:scale(1.04)}}
+.eyes{position:absolute;display:flex;gap:14px;opacity:calc(var(--curse) * 1.15);transition:opacity .8s;animation:blink 5s infinite}
+.eyes i{display:block;width:12px;height:6px;border-radius:50%;background:#ffcf5a;box-shadow:0 0 12px 4px rgba(255,120,30,.8)}
+.e1{left:6%;top:30%}
+.e2{right:9%;top:58%;animation-delay:-2s}
+.e3{left:14%;bottom:12%;animation-delay:-3.3s}
+@keyframes blink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.08)}}
+.bat{position:absolute;left:0;width:46px;fill:#05060f;stroke:#232a66;stroke-width:1;opacity:.9;animation:fly 17s linear infinite,flap .28s ease-in-out infinite alternate}
+.b1{top:9%}
+.b2{top:24%;width:32px;animation-duration:23s,.22s;animation-delay:-9s,0s}
+@keyframes fly{from{translate:-90px 0}50%{translate:50vw -36px}to{translate:calc(100vw + 90px) 14px}}
+@keyframes flap{from{transform:scaleY(1)}to{transform:scaleY(.55)}}
+#fx{position:fixed;inset:0;z-index:25;pointer-events:none}
+
+/* ---------- каркас ---------- */
+.wrap{max-width:780px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#hudbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:linear-gradient(180deg,var(--night-2),#10153a);border-bottom:1px solid var(--line);box-shadow:0 10px 26px rgba(0,0,0,.5)}
+#hudbar .wrap{padding-block:10px 8px;display:grid;gap:8px}
+.hud-top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+.brand{font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.hud-btns{display:flex;gap:6px;flex-shrink:0}
+.chip{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--sand);border-radius:6px;padding:6px 11px;font-size:.84rem;font-weight:700;cursor:pointer;min-height:34px}
+.chip:hover{border-color:var(--gold);color:var(--gold)}
+.chip.warn{border-color:var(--ruby);color:var(--ruby)}
+.hud-main{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.slots{display:flex;gap:6px}
+.slot{width:38px;height:38px;border:1px dashed var(--line);border-radius:6px;display:grid;place-items:center;color:var(--line);transition:all .5s}
+.slot .ico{width:24px;height:24px;display:block;opacity:.45}
+.slot.got{border-style:solid;border-color:var(--gold);color:var(--gold);background:rgba(242,182,50,.1);box-shadow:0 0 14px rgba(242,182,50,.4)}
+.slot.got .ico{opacity:1}
+.score{display:flex;align-items:baseline;gap:8px;position:relative}
+.lbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sand-dim);font-weight:800}
+.score b{font-family:var(--font-display);font-size:1.9rem;color:var(--sand);font-variant-numeric:tabular-nums;line-height:1}
+#scorePops{position:absolute;right:0;top:-6px;pointer-events:none}
+.pop{position:absolute;right:0;top:0;font-weight:800;color:var(--turq);font-size:1.1rem;white-space:nowrap;animation:pop 1.1s ease-out forwards}
+@keyframes pop{from{transform:translateY(6px);opacity:1}to{transform:translateY(-28px);opacity:0}}
+.curse{display:flex;align-items:center;gap:10px;min-width:0}
+.bar{flex:1;height:8px;border-radius:4px;background:rgba(0,0,0,.45);border:1px solid var(--line);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ember),var(--ruby));box-shadow:0 0 10px var(--ruby);transition:width .6s}
+#curseTxt{font-size:.8rem;color:var(--sand-dim);flex:2;min-width:0}
+.frieze{height:12px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath d='M0 10L6 2l6 8 6-8 6 8' fill='none' stroke='%23f2b632' stroke-width='1.6' stroke-opacity='.5'/%3E%3C/svg%3E");background-repeat:repeat-x;background-position:center}
+#stage{position:relative;z-index:2;padding-block:20px 64px;outline:none}
+
+/* ---------- типографика ---------- */
+.eyebrow{font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:800}
+.eyebrow.dim{color:var(--sand-dim)}
+.h2{font-family:var(--font-display);font-weight:700;font-size:clamp(1.7rem,6vw,2.3rem);line-height:1.1;text-wrap:balance;margin-top:4px}
+.lead{color:var(--sand);max-width:62ch}
+.dim{color:var(--sand-dim)}
+.enter{animation:rise .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:.4;transform:translateY(14px)}to{opacity:1;transform:none}}
+.shake{animation:shake .45s}
+@keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
+
+/* ---------- компоненты ---------- */
+.card{background:linear-gradient(180deg,var(--stone-2),var(--stone));border:1px solid var(--line);border-radius:8px;padding:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 30px rgba(0,0,0,.4)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:12px 24px;border:0;border-bottom:4px solid var(--gold-deep);border-radius:6px;background:linear-gradient(180deg,#ffd35a,var(--gold));color:#2a1700;font-weight:800;font-size:1rem;cursor:pointer;transition:transform .12s,box-shadow .2s,filter .2s;box-shadow:0 0 0 rgba(242,182,50,0)}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(242,182,50,.35)}
+.btn:active{transform:translateY(2px);border-bottom-width:2px}
+.btn:disabled{filter:grayscale(.8) brightness(.6);cursor:not-allowed;transform:none;box-shadow:none}
+.btn.ghost{background:transparent;color:var(--sand);border:1px solid var(--line);border-bottom-width:3px}
+.btn.ghost:hover{border-color:var(--gold);color:var(--gold);box-shadow:none}
+.btn.small{min-height:40px;padding:8px 16px;font-size:.9rem}
+.row{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-offset:2px}
+.field{width:100%;min-height:50px;padding:10px 14px;border-radius:6px;border:1px solid var(--line);background:rgba(0,0,0,.35);color:var(--sand);font:inherit;font-size:1.05rem}
+.field::placeholder{color:var(--sand-dim)}
+
+/* старт */
+.hero{text-align:center;display:grid;justify-items:center;gap:14px;padding-top:6px}
+.emblem{width:min(190px,50vw);color:var(--gold);filter:drop-shadow(0 0 18px rgba(242,182,50,.55));animation:pulse 3.4s ease-in-out infinite}
+.emblem svg{display:block;width:100%;height:auto}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 12px rgba(242,182,50,.4))}50%{filter:drop-shadow(0 0 28px rgba(255,123,28,.8))}}
+.title{font-family:var(--font-display);font-weight:700;font-size:clamp(2.8rem,12vw,4.8rem);line-height:.95;color:var(--gold);text-wrap:balance;animation:glow 4s ease-in-out infinite}
+.title em{font-style:italic;font-weight:700;font-size:.82em}
+@supports((-webkit-background-clip:text) or (background-clip:text)){
+  .title{background:linear-gradient(180deg,#fff0bd,var(--gold) 52%,var(--gold-deep));-webkit-background-clip:text;background-clip:text;color:transparent}
+}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 8px rgba(255,123,28,.35))}45%{filter:drop-shadow(0 0 20px rgba(255,123,28,.75))}50%{filter:drop-shadow(0 0 4px rgba(255,123,28,.3))}}
+.tag{font-family:var(--font-display);font-style:italic;font-size:1.15rem;color:var(--sand-dim)}
+.story{text-align:left;width:100%;display:grid;gap:12px}
+.facts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.fact-chip{border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:.88rem;font-weight:800;color:var(--gold);background:rgba(0,0,0,.25)}
+.start-form{width:100%;display:grid;gap:12px}
+.record{font-size:.9rem;color:var(--sand-dim)}
+
+/* карта */
+.rooms{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:12px;position:relative}
+.rooms::before{content:"";position:absolute;left:34px;top:20px;bottom:20px;width:2px;background:repeating-linear-gradient(180deg,var(--line) 0 8px,transparent 8px 14px)}
+.room{position:relative;width:100%;display:grid;grid-template-columns:44px minmax(0,1fr) 48px;gap:14px;align-items:center;text-align:left;padding:14px 14px;border:1px solid var(--line);border-radius:8px;background:linear-gradient(180deg,var(--stone-2),var(--stone));cursor:pointer;transition:transform .15s,border-color .2s,box-shadow .2s}
+.room:hover:not(:disabled){transform:translateX(4px);border-color:var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 0 1px rgba(242,182,50,.25)}
+.room:disabled{cursor:not-allowed;opacity:.55}
+.rn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--night);border:2px solid var(--line);font-family:var(--font-display);font-weight:700;font-size:1.3rem;color:var(--gold);z-index:1}
+.room.open .rn{border-color:var(--gold);box-shadow:0 0 16px rgba(242,182,50,.5);animation:pulse2 2s infinite}
+@keyframes pulse2{50%{box-shadow:0 0 4px rgba(242,182,50,.2)}}
+.room.won .rn{background:var(--gold);color:#2a1700;border-color:var(--gold)}
+.room.retry .rn{border-color:var(--ember);color:var(--ember)}
+.rt{display:grid;gap:1px;min-width:0}
+.rt b{font-family:var(--font-display);font-size:1.25rem;line-height:1.15}
+.rt small{color:var(--sand-dim);font-size:.88rem}
+.rt em{font-style:normal;font-size:.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.room.locked .rt em{color:var(--sand-dim)}
+.room.retry .rt em{color:var(--ember)}
+.room.won .rt em{color:var(--turq)}
+.rs{width:46px;height:46px;border:1px dashed var(--line);border-radius:6px;display:grid;place-items:center;color:var(--line)}
+.rs .ico{width:28px;height:28px;display:block;opacity:.4}
+.rs.got{border-style:solid;border-color:var(--gold);color:var(--gold);background:rgba(242,182,50,.1)}
+.rs.got .ico{opacity:1}
+.doorcard .rn svg{width:26px;height:26px}
+.doorcard.open{border-color:var(--gold)}
+
+/* зал */
+.room-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.prog{display:flex;gap:6px}
+.prog i{width:34px;height:8px;border-radius:4px;background:rgba(0,0,0,.4);border:1px solid var(--line)}
+.prog i.done{background:var(--gold);border-color:var(--gold)}
+.prog i.now{border-color:var(--gold);animation:pulse2 1.6s infinite;box-shadow:0 0 10px rgba(242,182,50,.5)}
+.guardian{margin-top:16px;border-left:4px solid var(--gold)}
+.g-name{font-family:var(--font-display);font-weight:700;color:var(--gold);font-size:1.15rem;margin-bottom:6px}
+.speech{font-style:italic;font-size:1.08rem}
+.prize{display:flex;gap:14px;align-items:center;margin-top:16px;padding:12px 14px;border:1px dashed var(--gold-deep);border-radius:8px;background:rgba(242,182,50,.05)}
+.prize .ico{width:46px;height:46px;color:var(--gold);flex-shrink:0;display:block}
+.prize div{display:grid;gap:2px;min-width:0}
+.prize span{font-size:.92rem;color:var(--sand-dim)}
+.qtext{font-family:var(--font-display);font-weight:700;font-size:clamp(1.3rem,4.6vw,1.65rem);line-height:1.25;text-wrap:balance;margin-bottom:16px}
+.note{min-height:1.5em;margin-top:12px;font-weight:700;color:var(--ember)}
+.opts{display:grid;gap:10px}
+.opt{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:center;text-align:left;min-height:54px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:rgba(0,0,0,.28);cursor:pointer;transition:transform .12s,border-color .2s,background .2s}
+.opt:hover:not(:disabled){border-color:var(--gold);background:rgba(242,182,50,.08);transform:translateX(3px)}
+.opt .ltr{width:34px;height:34px;border-radius:6px;display:grid;place-items:center;background:var(--night);border:1px solid var(--line);font-family:var(--font-display);font-weight:700;color:var(--gold)}
+.opt:disabled{cursor:default}
+.opt.out{opacity:.3;text-decoration:line-through}
+.opt.bad{border-color:var(--ruby);background:rgba(240,80,106,.14);animation:shake .4s}
+.opt.good{border-color:var(--turq);background:rgba(53,208,181,.16);box-shadow:0 0 18px rgba(53,208,181,.3)}
+.hintrow{margin-top:14px}
+
+/* шифр */
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;margin-bottom:16px}
+.lg{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px;border:1px solid var(--line);border-radius:6px;background:rgba(0,0,0,.25);font-weight:800}
+.lg svg{width:24px;height:24px;color:var(--gold)}
+.code{display:flex;gap:10px;justify-content:center;margin:6px 0 16px}
+.cell{width:68px;height:68px;border:2px solid var(--gold-deep);border-radius:8px;display:grid;place-items:center;background:rgba(242,182,50,.06);color:var(--gold)}
+.cell svg{width:38px;height:38px}
+.cipher-in{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:stretch}
+.cipher-in .field{text-transform:uppercase;letter-spacing:.3em;text-align:center;font-size:1.4rem;font-weight:800}
+
+/* порядок */
+.seq{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.slot-o{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center;min-height:58px;padding:6px 10px;border:1px dashed var(--line);border-radius:8px}
+.slot-o .no{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--night);border:1px solid var(--line);font-family:var(--font-display);font-weight:700;color:var(--gold)}
+.slot-o .ph{color:var(--sand-dim);font-size:.9rem}
+.slot-o.locked{border-style:solid;border-color:var(--turq);background:rgba(53,208,181,.08)}
+.oc{width:100%;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--stone-2);cursor:pointer;min-height:44px;font-size:.98rem;transition:border-color .2s,transform .12s}
+.oc:hover:not(:disabled){border-color:var(--gold);transform:translateY(-1px)}
+.oc:disabled{cursor:default}
+.oc.ok{border-color:var(--turq);background:rgba(53,208,181,.12)}
+.pool{display:grid;gap:8px;margin-bottom:14px}
+
+/* пары */
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pairs .col{display:grid;gap:10px;align-content:start;min-width:0}
+.mt{position:relative;min-height:62px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:rgba(0,0,0,.28);cursor:pointer;text-align:center;font-weight:700;font-size:.95rem;overflow-wrap:anywhere;transition:border-color .2s,transform .12s,background .2s}
+.mt:hover:not(:disabled){border-color:var(--gold)}
+.mt.sel{border-color:var(--gold);background:rgba(242,182,50,.16);box-shadow:0 0 16px rgba(242,182,50,.4);transform:scale(1.02)}
+.mt.ok{border-color:var(--turq);background:rgba(53,208,181,.14);cursor:default}
+.mt.ok::after{content:attr(data-n);position:absolute;top:-9px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--turq);color:#06231e;font-size:.78rem;font-weight:800;display:grid;place-items:center}
+.mt.wrong{border-color:var(--ruby);animation:shake .4s}
+
+/* обратная связь */
+.fbbox{margin-top:16px}
+.fb{border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:10px;animation:rise .4s both}
+.fb.ok{border-color:var(--turq);background:rgba(53,208,181,.1)}
+.fb.bad{border-color:var(--ruby);background:rgba(240,80,106,.1)}
+.fb-t{font-family:var(--font-display);font-weight:700;font-size:1.3rem;line-height:1.25}
+.fb.ok .fb-t{color:var(--turq)}
+.fb.bad .fb-t{color:var(--ruby)}
+.fb-pts{font-weight:800;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sand-dim)}
+.fact{display:grid;gap:4px;padding:12px;border-radius:6px;background:rgba(0,0,0,.28)}
+.fb .btn{justify-self:start}
+
+/* результат зала */
+.result{display:grid;gap:16px;justify-items:center;text-align:center}
+.big-score{display:flex;align-items:baseline;gap:8px}
+.big-score b{font-family:var(--font-display);font-size:3.6rem;color:var(--gold);line-height:1}
+.reveal{position:relative;display:grid;justify-items:center;gap:10px;padding:26px 18px;width:100%}
+.reveal .halo{position:absolute;width:190px;height:190px;border-radius:50%;top:0;background:conic-gradient(from 0deg,rgba(242,182,50,.0),rgba(242,182,50,.35),rgba(242,182,50,0),rgba(255,123,28,.35),rgba(242,182,50,0));filter:blur(6px);animation:spin 7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.reveal .ico{position:relative;width:104px;height:104px;color:var(--gold);display:block;filter:drop-shadow(0 0 16px rgba(242,182,50,.8));animation:land .9s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes land{from{transform:scale(.2) rotate(-40deg);opacity:0}to{transform:none;opacity:1}}
+.reveal b{font-family:var(--font-display);font-size:1.5rem;color:var(--gold)}
+.reveal p{max-width:46ch}
+.lockmsg{border-color:var(--ember)}
+
+/* дверь */
+.dslots{display:flex;justify-content:center;gap:10px;margin:20px 0 14px;flex-wrap:wrap}
+.dslot{width:54px;height:54px;border:2px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--line);background:var(--night);transition:all .5s}
+.dslot .ico{width:30px;height:30px;display:block;opacity:.35;transition:opacity .5s}
+.dslot.has{border-color:var(--gold-deep)}
+.dslot.has .ico{opacity:.7;color:var(--gold-deep)}
+.dslot.lit{border-color:var(--gold);color:var(--gold);box-shadow:0 0 24px rgba(242,182,50,.9);animation:land .6s both}
+.dslot.lit .ico{opacity:1;color:var(--gold)}
+.door{position:relative;height:260px;width:min(290px,100%);margin:0 auto;border-radius:145px 145px 0 0;overflow:hidden;border:5px solid var(--gold-deep);background:#000;box-shadow:0 0 40px rgba(0,0,0,.6)}
+.door .light{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 75%,#fff7d6 0,#ffc65a 35%,#ff8a2a 70%,#7a2a08 100%);opacity:0;transition:opacity 1.4s}
+.door.open .light{opacity:1}
+.door .half{position:absolute;top:0;bottom:0;width:50%;background-color:#1b2058;background-image:
+  linear-gradient(90deg,rgba(0,0,0,.25),transparent 30%,transparent 70%,rgba(0,0,0,.3)),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath d='M0 10L6 2l6 8 6-8 6 8' fill='none' stroke='%23f2b632' stroke-width='1.6' stroke-opacity='.45'/%3E%3C/svg%3E"),
+  repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 2px,transparent 2px 40px);
+  background-repeat:no-repeat,repeat-x,no-repeat;background-position:0 0,0 30px,0 0;
+  transition:transform 2s cubic-bezier(.6,0,.2,1)}
+.door .half.l{left:0;border-right:2px solid #000}
+.door .half.r{right:0;border-left:2px solid #000}
+.door.open .half.l{transform:translateX(-101%)}
+.door.open .half.r{transform:translateX(101%)}
+.missing{display:grid;gap:10px;margin-top:18px}
+.missing .btn{justify-content:flex-start;text-align:left}
+
+/* финал */
+.scroll{display:grid;gap:14px;justify-items:center;text-align:center;border-color:var(--gold-deep);background:linear-gradient(180deg,#2a2552,#171c47)}
+.scroll .rank{font-family:var(--font-display);font-weight:700;font-size:clamp(1.8rem,7vw,2.6rem);color:var(--gold);line-height:1.1;text-wrap:balance}
+.scroll .sym-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.scroll .sym-row .ico{width:40px;height:40px;color:var(--gold);display:block;filter:drop-shadow(0 0 8px rgba(242,182,50,.6))}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;width:100%}
+.stat{padding:10px;border:1px solid var(--line);border-radius:6px;background:rgba(0,0,0,.25)}
+.stat b{display:block;font-family:var(--font-display);font-size:1.7rem;color:var(--sand);line-height:1.1}
+.stat span{font-size:.8rem;color:var(--sand-dim)}
+.ico{display:inline-block}
+.ico svg{display:block;width:100%;height:100%}
+
+@media (max-width:420px){
+  .room{grid-template-columns:40px minmax(0,1fr) 42px;gap:10px;padding:12px}
+  .rn{width:40px;height:40px}
+  .rooms::before{left:32px}
+  .rs{width:42px;height:42px}
+  .slot{width:34px;height:34px}
+  .slots{gap:5px}
+  .pairs{gap:8px}
+  .cell{width:60px;height:60px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .bat{display:none}
+}
+</style>
+
+<div id="bg" aria-hidden="true">
+  <div class="torch l"></div><div class="torch r"></div>
+  <div class="eyes e1"><i></i><i></i></div>
+  <div class="eyes e2"><i></i><i></i></div>
+  <div class="eyes e3"><i></i><i></i></div>
+  <svg class="bat b1" viewBox="0 0 64 28"><polygon points="32,8 36,3 38,10 56,2 50,12 62,16 48,18 44,26 38,20 32,24 26,20 20,26 16,18 2,16 14,12 8,2 26,10 28,3"/></svg>
+  <svg class="bat b2" viewBox="0 0 64 28"><polygon points="32,8 36,3 38,10 56,2 50,12 62,16 48,18 44,26 38,20 32,24 26,20 20,26 16,18 2,16 14,12 8,2 26,10 28,3"/></svg>
+</div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<div id="hudbar" hidden>
+  <div class="wrap">
+    <div class="hud-top">
+      <div class="brand">Проклятие фараона</div>
+      <div class="hud-btns">
+        <button class="chip" id="btnMap" type="button">Карта</button>
+        <button class="chip" id="btnSound" type="button" aria-pressed="false">Звук: выкл</button>
+      </div>
+    </div>
+    <div class="hud-main">
+      <div class="slots" id="slots" role="img" aria-label="Собранные священные символы"></div>
+      <div class="score"><span class="lbl">Баллы</span><b id="scoreVal">0</b><span id="scorePops"></span></div>
+    </div>
+    <div class="curse"><span class="lbl">Проклятие</span><div class="bar"><i id="curseFill"></i></div><span id="curseTxt"></span></div>
+  </div>
+  <div class="frieze"></div>
+</div>
+
+<main id="stage" class="wrap" tabindex="-1"></main>
+
+<script>
+(function(){
+'use strict';
+
+var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+/* ---------- помощники ---------- */
+function $(s, r){ return (r || document).querySelector(s); }
+function el(tag, attrs){
+  var n = document.createElement(tag);
+  if (attrs) {
+    Object.keys(attrs).forEach(function(k){
+      var v = attrs[k];
+      if (v == null || v === false) return;
+      if (k === 'class') n.className = v;
+      else if (k === 'html') n.innerHTML = v;
+      else if (k.indexOf('on') === 0) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? '' : v);
+    });
+  }
+  var kids = Array.prototype.slice.call(arguments, 2);
+  kids.forEach(function(c){
+    if (Array.isArray(c)) c.forEach(add); else add(c);
+  });
+  function add(c){
+    if (c == null || c === false) return;
+    n.appendChild(c.nodeType ? c : document.createTextNode(String(c)));
+  }
+  return n;
+}
+function shuffle(a){
+  var r = a.slice();
+  for (var i = r.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = r[i]; r[i] = r[j]; r[j] = t;
+  }
+  return r;
+}
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+
+/* ---------- иконки ---------- */
+var ICONS = {
+  sun: '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="12" fill="currentColor"/><circle cx="32" cy="32" r="18" fill="none" stroke="currentColor" stroke-width="2.5"/><g stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><path d="M32 4v8M32 52v8M4 32h8M52 32h8M12.2 12.2l5.6 5.6M46.2 46.2l5.6 5.6M12.2 51.8l5.6-5.6M46.2 17.8l5.6-5.6"/></g></svg>',
+  scarab: '<svg viewBox="0 0 64 64"><circle cx="32" cy="7" r="5" fill="currentColor"/><ellipse cx="32" cy="38" rx="14" ry="17" fill="currentColor"/><path d="M23 22c0-6 4-9 9-9s9 3 9 9c-5-2-13-2-18 0z" fill="currentColor"/><g stroke="currentColor" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M19 32L8 26M18 42L6 44M21 52l-8 8M45 32l11-6M46 42l12 2M43 52l8 8"/></g><path d="M32 25v28" stroke="#0b0e22" stroke-width="1.8"/></svg>',
+  scroll: '<svg viewBox="0 0 64 64"><rect x="14" y="14" width="36" height="36" rx="2" fill="currentColor"/><rect x="9" y="8" width="46" height="9" rx="4.5" fill="currentColor"/><rect x="9" y="47" width="46" height="9" rx="4.5" fill="currentColor"/><path d="M20 25h24M20 32h24M20 39h15" stroke="#0b0e22" stroke-width="2.6" stroke-linecap="round"/></svg>',
+  feather: '<svg viewBox="0 0 64 64"><path d="M32 3c11 8 13 25 7 39-2 5-5 10-7 17-2-7-5-12-7-17C19 28 21 11 32 3z" fill="currentColor"/><path d="M32 12v46" stroke="#0b0e22" stroke-width="2"/><path d="M32 22l-6 6M32 31l-7 7M32 40l-5 5M32 22l6 6M32 31l7 7M32 40l5 5" stroke="#0b0e22" stroke-width="1.7" stroke-linecap="round"/></svg>',
+  ankh: '<svg viewBox="0 0 64 64"><ellipse cx="32" cy="18" rx="11" ry="12" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="28.5" y="29" width="7" height="32" rx="2" fill="currentColor"/><rect x="12" y="35" width="40" height="7" rx="2" fill="currentColor"/></svg>',
+  door: '<svg viewBox="0 0 64 64"><path d="M14 58V28C14 16 22 8 32 8s18 8 18 20v30z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M32 8v50M10 58h44" stroke="currentColor" stroke-width="3"/><circle cx="26" cy="38" r="2.4" fill="currentColor"/><circle cx="38" cy="38" r="2.4" fill="currentColor"/></svg>',
+  eye: '<svg viewBox="0 0 120 76"><path d="M12 22C40 2 82 2 108 22" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M8 38C34 16 84 16 112 38 84 58 34 58 8 38z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><circle cx="60" cy="38" r="13" fill="currentColor"/><circle cx="60" cy="38" r="5.5" fill="#0b0e22"/><path d="M50 56c-3 8-2 14 5 19" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M92 52c10 2 17 8 17 16 0 7-8 8-10 3" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>'
+};
+function icon(name, cls){ return el('span', { class: 'ico ' + (cls || ''), html: ICONS[name] }); }
+
+var SHAPES = {
+  tri: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 17H3z"/></svg>',
+  circ: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>',
+  dia: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 10-9 10-9-10z"/></svg>',
+  sq: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>',
+  cross: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7z"/></svg>',
+  wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M2 15l4-7 4 7 4-7 4 7 4-7"/></svg>'
+};
+
+/* ---------- данные игры ---------- */
+var MAXROOM = 30, NEED = 18;
+
+var ROOMS = [
+  {
+    title: 'Зал Пирамид', topic: 'Пирамиды и гробницы', guardian: 'Великий Сфинкс',
+    intro: 'Я стерегу покой пирамид уже четыре с половиной тысячи лет. Ответь на три вопроса о них, и Солнечный диск Ра будет твоим.',
+    symbol: { icon: 'sun', name: 'Солнечный диск Ра', text: 'Знак бога Ра, который каждый день проплывает по небу и приносит свет.' },
+    challenges: [
+      { type: 'mc', q: 'Какая пирамида в Египте считается самой большой?',
+        options: ['Пирамида Хеопса в Гизе', 'Пирамида Тутанхамона', 'Пирамида Клеопатры', 'Пирамида Рамсеса в Фивах'], answer: 0,
+        fact: 'Пирамиду Хеопса (Хуфу) построили около 4500 лет назад. Сначала её высота была около 146 метров, а сложена она из миллионов каменных блоков. Это единственное из семи чудес света, которое сохранилось до наших дней.' },
+      { type: 'mc', q: 'Для чего египтяне строили пирамиды?',
+        options: ['Как гробницы для фараонов', 'Как маяки для кораблей на Ниле', 'Как склады для зерна', 'Как школы для писцов'], answer: 0,
+        fact: 'Египтяне верили в жизнь после смерти. В пирамиде хранили тело фараона и всё, что пригодится ему в загробном мире: еду, украшения, мебель и даже лодки.' },
+      { type: 'mc', q: 'Какое существо с телом льва и человеческой головой стережёт пирамиды в Гизе?',
+        options: ['Великий Сфинкс', 'Минотавр', 'Грифон', 'Бог Анубис'], answer: 0,
+        fact: 'Великий Сфинкс высечен из цельной скалы. Он около 73 метров в длину и 20 метров в высоту. Многие учёные считают, что у него лицо фараона Хафра.' }
+    ]
+  },
+  {
+    title: 'Зал Фараонов', topic: 'Правители Египта', guardian: 'Дух фараона',
+    intro: 'Кто смеет тревожить мой сон? Докажи, что знаешь историю моего царства. Ответишь на три вопроса, и священный скарабей станет твоим.',
+    symbol: { icon: 'scarab', name: 'Священный скарабей', text: 'Египтяне считали жука-скарабея знаком возрождения и новой жизни.' },
+    challenges: [
+      { type: 'mc', q: 'Что вначале означало слово «фараон»?',
+        options: ['«Великий дом»: так называли дворец', '«Сын реки»', '«Повелитель пустыни»', '«Золотая корона»'], answer: 0,
+        fact: 'Сначала так называли царский дворец, а позже и самого правителя. Египтяне верили, что фараон — бог в человеческом облике и воплощение бога Гора.' },
+      { type: 'mc', q: 'Гробницу какого юного фараона нашёл Говард Картер в 1922 году почти нетронутой?',
+        options: ['Тутанхамона', 'Рамсеса II', 'Хеопса', 'Эхнатона'], answer: 0,
+        fact: 'Тутанхамон стал фараоном ещё мальчиком, примерно в девять лет. В его гробнице нашли золотую маску, колесницы и тысячи вещей. Именно с этой находкой связывают легенду о «проклятии фараона»!' },
+      { type: 'mc', q: 'Что символизировала двойная корона фараона, которая называется пшент?',
+        options: ['Власть над Верхним и Нижним Египтом', 'Богатство от торговли золотом', 'Победу над ливийцами', 'Родство с писцами'], answer: 0,
+        fact: 'Около 3000 года до н. э. Верхний и Нижний Египет объединились в одно государство. Белая корона принадлежала Верхнему Египту, красная — Нижнему. Вместе они образовали пшент.' }
+    ]
+  },
+  {
+    title: 'Зал Иероглифов', topic: 'Письмо и знания', guardian: 'Писец бога Тота',
+    intro: 'Добро пожаловать в Зал Иероглифов. Здесь хранится тайна письма. Реши три задачи, и Свиток мудрости откроется тебе.',
+    symbol: { icon: 'scroll', name: 'Свиток мудрости', text: 'На таком папирусе писцы записывали законы, счёт зерна и тайны жрецов.' },
+    challenges: [
+      { type: 'cipher', q: 'Жрецы зашифровали имя великой реки, которая дарила Египту жизнь. Расшифруй слово по таблице знаков.',
+        word: 'НИЛ',
+        legend: [['tri', 'Н'], ['circ', 'И'], ['wave', 'Л'], ['dia', 'Р'], ['sq', 'А'], ['cross', 'Т']],
+        fact: 'Каждый год Нил разливался и оставлял на полях плодородный ил, поэтому почти все египтяне жили по берегам реки. Недаром говорят: «Египет — дар Нила». Кстати, знак воды в иероглифах — волнистая линия.' },
+      { type: 'mc', q: 'Какой камень, найденный в 1799 году, помог учёным прочитать египетские иероглифы?',
+        options: ['Розеттский камень', 'Камень Гизы', 'Скрижаль Рамсеса', 'Нильская плита'], answer: 0,
+        fact: 'На Розеттском камне один текст записан тремя видами письма, и один из них греческий. Греческий учёные читать умели. По нему французский учёный Жан-Франсуа Шампольон в 1822 году разгадал иероглифы.' },
+      { type: 'mc', q: 'Из какого растения египтяне делали «бумагу» для письма?',
+        options: ['Из папируса', 'Из льна', 'Из лотоса', 'Из пшеницы'], answer: 0,
+        fact: 'Папирус рос в дельте Нила. Его стебли резали на полоски, выкладывали крест-накрест, прессовали и сушили. Листы склеивали в свитки. Профессия писца в Египте была очень почётной.' }
+    ]
+  },
+  {
+    title: 'Зал Богов', topic: 'Египетские боги', guardian: 'Анубис, проводник душ',
+    intro: 'Я Анубис, проводник душ. Дальше пройдёт лишь тот, кто знает богов Египта. Три испытания ждут тебя, и Перо Маат станет наградой.',
+    symbol: { icon: 'feather', name: 'Перо Маат', text: 'Перо богини правды и справедливости. Сердце честного человека легче этого пера.' },
+    challenges: [
+      { type: 'match', q: 'Соедини бога с тем, чем он повелевал. Выбери бога слева, потом его дар справа.',
+        pairs: [['Ра', 'Солнце и дневной свет'], ['Анубис', 'Мумификация и путь умерших'], ['Тот', 'Письмо и мудрость'], ['Бастет', 'Кошки и домашний очаг']],
+        fact: 'У многих богов были головы животных: у Ра — сокола, у Анубиса — шакала, у Тота — ибиса, у Бастет — кошки. Так египтяне показывали особые силы богов.' },
+      { type: 'mc', q: 'С чем сравнивали сердце умершего на весах загробного суда?',
+        options: ['С пером богини Маат', 'С золотой гирькой', 'С камнем из пирамиды', 'С каплей воды из Нила'], answer: 0,
+        fact: 'Перо Маат — знак правды и справедливости. Если сердце оказывалось лёгким, как перо, душа попадала в страну вечного покоя. Если оно было тяжёлым от дурных дел, его съедало чудовище.' },
+      { type: 'mc', q: 'Какой бог с головой сокола считался покровителем фараонов?',
+        options: ['Гор', 'Анубис', 'Тот', 'Себек'], answer: 0,
+        fact: 'Фараон считался живым воплощением Гора. «Око Гора» (уджат) было амулетом, который защищал от зла и приносил здоровье.' }
+    ]
+  },
+  {
+    title: 'Зал Мумий', topic: 'Загробная жизнь', guardian: 'Мумия-хранитель',
+    intro: 'Тише... Я не спала три тысячи лет. Ответь на три вопроса о моей загробной жизни, и ключ жизни Анх откроет тебе путь к двери.',
+    symbol: { icon: 'ankh', name: 'Анх, ключ жизни', text: 'Крест с петлёй, знак вечной жизни. Его держат в руках боги.' },
+    challenges: [
+      { type: 'order', q: 'Расставь этапы мумификации в правильном порядке. Нажимай на карточки по очереди.',
+        items: ['Достать внутренние органы и убрать их в особые сосуды', 'Засыпать тело солью натрон, чтобы оно высохло', 'Натереть тело маслами и благовониями', 'Обернуть тело льняными бинтами', 'Положить мумию в саркофаг'],
+        fact: 'Мумификация занимала около 70 дней. Бальзамировщики работали под защитой бога Анубиса. Сердце оставляли в теле, потому что оно было нужно для загробного суда.' },
+      { type: 'mc', q: 'Зачем египтяне делали мумии?',
+        options: ['Чтобы тело сохранилось для жизни после смерти', 'Чтобы пугать грабителей', 'Чтобы продавать их купцам', 'Чтобы украшать храмы'], answer: 0,
+        fact: 'Египтяне верили, что душа возвращается в тело. Если тело разрушится, душа не найдёт его в загробном мире. Поэтому тело старались сохранить как можно дольше. Мумифицировали даже любимых кошек!' },
+      { type: 'mc', q: 'Как называется место возле Фив, где в скалах прятали гробницы фараонов, в том числе гробницу Тутанхамона?',
+        options: ['Долина царей', 'Дельта Нила', 'Гора Синай', 'Оазис Файюм'], answer: 0,
+        fact: 'Фараоны Нового царства уже не строили пирамид, ведь их слишком легко грабили. Гробницы высекали в скалах и тайно охраняли. В Долине царей нашли более 60 гробниц.' }
+    ]
+  }
+];
+
+var PRAISE = ['Верно! Анубис доволен.', 'Блестяще! Факелы вспыхнули ярче.', 'Точно! Мудрость писца с тобой.', 'Правильно! Проклятие слабеет.', 'Отлично! Стены гробницы одобрительно гудят.'];
+
+/* ---------- состояние ---------- */
+var S = null;
+var current = 'start';
+var mapPending = false;
+
+function newGame(name){
+  S = {
+    name: name || 'Археолог',
+    rooms: ROOMS.map(function(){ return { done: false, best: 0, symbol: false, first: 0, mistakes: 0 }; }),
+    mistakes: 0, curse: 0, run: null, doorOpened: false
+  };
+  shownScore = 0;
+  scoreEl.textContent = '0';
+}
+function displayTotal(){
+  return S.rooms.reduce(function(sum, st, i){
+    return sum + ((S.run && S.run.room === i) ? Math.max(st.best, S.run.score) : st.best);
+  }, 0);
+}
+function totalScore(){ return S.rooms.reduce(function(s, st){ return s + st.best; }, 0); }
+function symbolCount(){ return S.rooms.filter(function(r){ return r.symbol; }).length; }
+
+var STORE_KEY = 'pharaoh-curse-best';
+function loadBest(){ try { return Number(localStorage.getItem(STORE_KEY)) || 0; } catch (e) { return 0; } }
+function saveBest(v){ try { localStorage.setItem(STORE_KEY, String(v)); } catch (e) {} }
+
+/* ---------- панель сверху ---------- */
+var hudbar = $('#hudbar'), slotsEl = $('#slots'), scoreEl = $('#scoreVal'), popsEl = $('#scorePops');
+var curseFill = $('#curseFill'), curseTxt = $('#curseTxt'), btnMap = $('#btnMap'), btnSound = $('#btnSound'), stage = $('#stage');
+var shownScore = 0, scoreRaf = 0;
+
+var slotNodes = ROOMS.map(function(r){
+  var s = el('div', { class: 'slot', title: r.symbol.name }, icon(r.symbol.icon));
+  slotsEl.appendChild(s);
+  return s;
+});
+
+function curseText(c){
+  if (c < 25) return 'Тихо. Проклятие спит.';
+  if (c < 50) return 'Стены шепчут твоё имя.';
+  if (c < 75) return 'В темноте блестят чьи-то глаза!';
+  return 'Проклятие крепнет! Верные ответы ослабят его.';
+}
+function setScore(target){
+  cancelAnimationFrame(scoreRaf);
+  var from = shownScore, t0 = performance.now(), dur = reduce ? 0 : 500;
+  function step(t){
+    var k = dur ? Math.min(1, (t - t0) / dur) : 1;
+    shownScore = Math.round(from + (target - from) * k);
+    scoreEl.textContent = String(shownScore);
+    if (k < 1) scoreRaf = requestAnimationFrame(step);
+  }
+  scoreRaf = requestAnimationFrame(step);
+}
+function popScore(n){
+  var p = el('span', { class: 'pop' }, '+' + n);
+  popsEl.appendChild(p);
+  setTimeout(function(){ if (p.parentNode) p.parentNode.removeChild(p); }, 1200);
+}
+function updateHud(){
+  if (!S) return;
+  slotNodes.forEach(function(n, i){ n.classList.toggle('got', S.rooms[i].symbol); });
+  setScore(displayTotal());
+  curseFill.style.width = S.curse + '%';
+  curseTxt.textContent = curseText(S.curse);
+  document.documentElement.style.setProperty('--curse', (S.curse / 100).toFixed(2));
+}
+function resetMapBtn(){
+  mapPending = false;
+  btnMap.textContent = 'Карта';
+  btnMap.classList.remove('warn');
+}
+btnMap.addEventListener('click', function(){
+  if (!S) return;
+  if (current === 'challenge' && !mapPending) {
+    mapPending = true;
+    btnMap.textContent = 'Сбросить зал?';
+    btnMap.classList.add('warn');
+    setTimeout(resetMapBtn, 3500);
+    return;
+  }
+  S.run = null;
+  screenMap();
+});
+var soundOn = false;
+btnSound.addEventListener('click', function(){
+  soundOn = !soundOn;
+  btnSound.textContent = 'Звук: ' + (soundOn ? 'вкл' : 'выкл');
+  btnSound.setAttribute('aria-pressed', String(soundOn));
+  sfx('click');
+});
+
+function show(node, name){
+  current = name;
+  resetMapBtn();
+  hudbar.hidden = (name === 'start');
+  stage.replaceChildren(node);
+  node.classList.add('enter');
+  window.scrollTo(0, 0);
+  updateHud();
+}
+
+/* ---------- звук ---------- */
+var ac = null;
+function sfx(kind){
+  if (!soundOn) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+    var seqs = {
+      ok: [[660, 0, .12], [880, .12, .22]],
+      bad: [[170, 0, .28]],
+      sym: [[523, 0, .15], [659, .15, .15], [784, .3, .15], [1047, .45, .45]],
+      door: [[62, 0, 1.8], [90, .2, 1.4]],
+      click: [[440, 0, .06]]
+    };
+    var type = (kind === 'bad' || kind === 'door') ? 'sawtooth' : 'triangle';
+    var now = ac.currentTime;
+    seqs[kind].forEach(function(s){
+      var o = ac.createOscillator(), g = ac.createGain();
+      o.type = type; o.frequency.value = s[0];
+      g.gain.setValueAtTime(0.0001, now + s[1]);
+      g.gain.exponentialRampToValueAtTime(0.12, now + s[1] + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + s[1] + s[2]);
+      o.connect(g); g.connect(ac.destination);
+      o.start(now + s[1]); o.stop(now + s[1] + s[2] + 0.05);
+    });
+  } catch (e) {}
+}
+
+/* ---------- искры и фейерверк ---------- */
+var cv = $('#fx'), g2 = cv.getContext('2d'), W = 0, H = 0, ps = [], emberCount = 0;
+function fit(){
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  g2.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener('resize', fit);
+fit();
+function burst(x, y, n){
+  if (reduce) return;
+  var cols = ['#f2b632', '#ffd978', '#35d0b5', '#ff7b1c', '#f1e6c6'];
+  for (var i = 0; i < n; i++) {
+    var a = Math.random() * 6.283, s = 1.5 + Math.random() * 5;
+    ps.push({ k: 'b', x: x, y: y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 2, r: 2 + Math.random() * 3, life: 0, max: 55 + Math.random() * 40, c: pick(cols), ph: 0 });
+  }
+}
+function burstFrom(node, n){
+  if (!node || !node.getBoundingClientRect) return;
+  var r = node.getBoundingClientRect();
+  burst(r.left + r.width / 2, r.top + r.height / 2, n || 40);
+}
+function frame(){
+  requestAnimationFrame(frame);
+  if (document.hidden) return;
+  g2.clearRect(0, 0, W, H);
+  g2.globalCompositeOperation = 'lighter';
+  if (!reduce && emberCount < 36 && Math.random() < 0.25) {
+    ps.push({ k: 'e', x: Math.random() * W, y: H + 10, vx: (Math.random() - .5) * .3, vy: -(.3 + Math.random() * .7), r: 1 + Math.random() * 1.7, life: 0, max: 320 + Math.random() * 300, c: '#ff9a3c', ph: Math.random() * 6.28 });
+    emberCount++;
+  }
+  for (var i = ps.length - 1; i >= 0; i--) {
+    var p = ps[i], a;
+    p.life++;
+    if (p.k === 'e') {
+      p.x += p.vx + Math.sin((p.life + p.ph * 40) / 40) * .25;
+      p.y += p.vy;
+      a = Math.sin(Math.PI * Math.min(1, p.life / p.max)) * .7;
+    } else {
+      p.vy += .12; p.x += p.vx; p.y += p.vy; p.vx *= .99;
+      a = Math.max(0, 1 - p.life / p.max);
+    }
+    if (p.life >= p.max || p.y < -20 || p.y > H + 40) {
+      if (p.k === 'e') emberCount--;
+      ps.splice(i, 1);
+      continue;
+    }
+    g2.globalAlpha = a;
+    g2.fillStyle = p.c;
+    g2.beginPath(); g2.arc(p.x, p.y, p.r, 0, 6.283); g2.fill();
+  }
+  g2.globalAlpha = 1;
+}
+if (!reduce) requestAnimationFrame(frame);
+else requestAnimationFrame(function loopReduced(){ g2.clearRect(0, 0, W, H); });
+
+/* ---------- экраны ---------- */
+function screenStart(){
+  var input = el('input', { id: 'nameInput', class: 'field', type: 'text', maxlength: '18', placeholder: 'Твоё имя, археолог', autocomplete: 'off', value: S ? S.name : '', 'aria-label': 'Твоё имя' });
+  function begin(){
+    newGame(input.value.trim());
+    screenMap();
+  }
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') begin(); });
+  var best = loadBest();
+  var node = el('section', { class: 'hero' },
+    icon('eye', 'emblem'),
+    el('h1', { class: 'title' }, 'Проклятие', el('br'), el('em', null, 'фараона')),
+    el('p', { class: 'tag' }, 'Квест по Древнему Египту для 5 класса'),
+    el('div', { class: 'card story' },
+      el('p', { class: 'lead' }, 'Хэллоуин близко, и древнее проклятие проснулось. Ты — юный археолог. Ты нашёл вход в гробницу, но каменная плита за спиной с грохотом закрылась.'),
+      el('p', { class: 'lead' }, 'На стене высечено: «Выйдет лишь тот, кто знает историю Египта». Пройди пять залов, ответь на вопросы стражей, собери пять священных символов и открой Дверь фараона, пока проклятие не окрепло.')
+    ),
+    el('div', { class: 'facts' }, el('span', { class: 'fact-chip' }, '5 залов'), el('span', { class: 'fact-chip' }, '15 заданий'), el('span', { class: 'fact-chip' }, '5 символов')),
+    el('div', { class: 'start-form' },
+      input,
+      el('button', { class: 'btn', type: 'button', onclick: begin }, 'Войти в гробницу'),
+      best ? el('p', { class: 'record' }, 'Твой рекорд на этом устройстве: ' + best + ' из ' + (MAXROOM * ROOMS.length) + ' баллов') : null
+    )
+  );
+  show(node, 'start');
+}
+
+function statusFor(i){
+  var st = S.rooms[i];
+  var open = i === 0 || S.rooms[i - 1].done;
+  if (!open) return { cls: 'locked', text: 'Закрыт', open: false };
+  if (!st.done) return { cls: 'open', text: 'Открыт', open: true };
+  if (st.symbol) return { cls: 'won', text: 'Пройден · ' + st.best + '/' + MAXROOM, open: true };
+  return { cls: 'retry', text: 'Нужно больше баллов · ' + st.best + '/' + MAXROOM, open: true };
+}
+
+function screenMap(){
+  S.run = null;
+  var allDone = S.rooms.every(function(r){ return r.done; });
+  var allSym = symbolCount() === ROOMS.length;
+  var list = el('ol', { class: 'rooms' });
+  ROOMS.forEach(function(r, i){
+    var s = statusFor(i);
+    var b = el('button', { class: 'room ' + s.cls, type: 'button', disabled: !s.open },
+      el('span', { class: 'rn' }, String(i + 1)),
+      el('span', { class: 'rt' }, el('b', null, r.title), el('small', null, r.topic), el('em', null, s.text)),
+      el('span', { class: 'rs' + (S.rooms[i].symbol ? ' got' : '') }, icon(r.symbol.icon))
+    );
+    b.addEventListener('click', function(){ startRoom(i); });
+    list.appendChild(el('li', null, b));
+  });
+  var dState = !allDone ? 'locked' : (S.doorOpened ? 'won' : 'open');
+  var dText = !allDone ? 'Закрыта: пройди все залы' : (S.doorOpened ? 'Открыта · выйти на свет' : (allSym ? 'Готова открыться!' : 'Не хватает символов'));
+  var door = el('button', { class: 'room doorcard ' + dState, type: 'button', disabled: !allDone },
+    el('span', { class: 'rn' }, icon('door')),
+    el('span', { class: 'rt' }, el('b', null, 'Дверь фараона'), el('small', null, 'Нужны все пять символов'), el('em', null, dText)),
+    el('span', { class: 'rs' + (S.doorOpened ? ' got' : '') }, icon('door'))
+  );
+  door.addEventListener('click', function(){ if (S.doorOpened) screenFinal(); else screenDoor(); });
+  list.appendChild(el('li', null, door));
+
+  var node = el('section', null,
+    el('p', { class: 'eyebrow' }, 'Привет, ' + S.name + '!'),
+    el('h2', { class: 'h2' }, 'Карта гробницы'),
+    el('p', { class: 'lead dim', style: 'margin-top:8px' }, 'Заходи в залы по порядку. Чтобы получить символ, набери в зале не меньше ' + NEED + ' баллов из ' + MAXROOM + '. Зал можно пройти заново.'),
+    list
+  );
+  show(node, 'map');
+}
+
+function startRoom(i){
+  S.run = { room: i, idx: 0, score: 0, first: 0, mistakes: 0 };
+  screenRoomIntro(i);
+}
+
+function screenRoomIntro(i){
+  var r = ROOMS[i];
+  var node = el('section', null,
+    el('p', { class: 'eyebrow' }, 'Зал ' + (i + 1) + ' из ' + ROOMS.length),
+    el('h2', { class: 'h2' }, r.title),
+    el('div', { class: 'card guardian' }, el('div', { class: 'g-name' }, r.guardian), el('p', { class: 'speech' }, '«' + r.intro + '»')),
+    el('div', { class: 'prize' }, icon(r.symbol.icon), el('div', null, el('b', null, 'Награда: ' + r.symbol.name), el('span', null, 'Набери не меньше ' + NEED + ' баллов из ' + MAXROOM + ', и символ твой.'))),
+    el('div', { class: 'row' },
+      el('button', { class: 'btn', type: 'button', onclick: function(){ screenChallenge(); } }, 'Войти в зал'),
+      el('button', { class: 'btn ghost', type: 'button', onclick: function(){ S.run = null; screenMap(); } }, 'К карте'))
+  );
+  show(node, 'roomintro');
+}
+
+function onWrong(){
+  S.mistakes++;
+  S.run.mistakes++;
+  S.curse = Math.min(100, S.curse + 10);
+  updateHud();
+  shake();
+  sfx('bad');
+}
+function shake(){
+  if (reduce) return;
+  stage.classList.remove('shake');
+  void stage.offsetWidth;
+  stage.classList.add('shake');
+}
+
+function screenChallenge(){
+  var run = S.run, r = ROOMS[run.room], c = r.challenges[run.idx];
+  var prog = el('div', { class: 'prog' }, r.challenges.map(function(_, k){ return el('i', { class: k < run.idx ? 'done' : (k === run.idx ? 'now' : '') }); }));
+  var area = el('div', { class: 'area' });
+  var noteEl = el('p', { class: 'note', 'aria-live': 'polite' });
+  var fbBox = el('div', { class: 'fbbox', 'aria-live': 'polite' });
+  var labels = { mc: 'Вопрос', cipher: 'Шифр жрецов', order: 'Порядок событий', match: 'Соедини пары' };
+  var node = el('section', null,
+    el('div', { class: 'room-head' },
+      el('div', null, el('p', { class: 'eyebrow' }, r.title), el('p', { class: 'eyebrow dim' }, labels[c.type] + ' · ' + (run.idx + 1) + ' из ' + r.challenges.length)),
+      prog),
+    el('div', { class: 'card' }, el('h2', { class: 'qtext' }, c.q), area, noteEl),
+    fbBox
+  );
+  show(node, 'challenge');
+  var ctx = { wrong: onWrong, note: function(t){ noteEl.textContent = t; } };
+  function fin(res){
+    noteEl.textContent = '';
+    finishChallenge(res, c, fbBox);
+  }
+  var renderers = { mc: renderMC, cipher: renderCipher, order: renderOrder, match: renderMatch };
+  renderers[c.type](c, area, fin, ctx);
+}
+
+function finishChallenge(res, c, fbBox){
+  var run = S.run, room = ROOMS[run.room];
+  run.score += res.points;
+  if (res.first) run.first++;
+  if (res.solved && res.first) S.curse = Math.max(0, S.curse - 4);
+  updateHud();
+  if (res.points > 0) popScore(res.points);
+  var kind, title;
+  if (res.solved && res.first) { kind = 'ok'; title = pick(PRAISE); }
+  else if (res.solved) { kind = 'ok'; title = 'Верно, но только со второй попытки!'; }
+  else { kind = 'bad'; title = 'Не получилось. ' + (res.answer ? 'Правильный ответ: ' + res.answer + '.' : 'Правильный порядок теперь показан выше.'); }
+  if (res.solved) sfx('ok');
+  var last = run.idx >= room.challenges.length - 1;
+  var next = el('button', { class: 'btn', type: 'button', onclick: function(){
+    if (last) finishRoom(); else { run.idx++; screenChallenge(); }
+  } }, last ? 'Узнать результат зала' : 'Дальше');
+  fbBox.replaceChildren(el('div', { class: 'fb ' + kind },
+    el('div', { class: 'fb-t' }, title),
+    el('div', { class: 'fb-pts' }, res.points > 0 ? '+' + res.points + ' баллов' : '0 баллов'),
+    el('div', { class: 'fact' }, el('span', { class: 'eyebrow' }, 'Знаешь ли ты?'), el('p', null, c.fact)),
+    next
+  ));
+  if (res.solved) burstFrom(scoreEl, res.first ? 36 : 18);
+  fbBox.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' });
+}
+
+/* --- тип: вопрос с вариантами --- */
+function renderMC(c, area, fin, ctx){
+  var opts = shuffle(c.options.map(function(t, i){ return { t: t, ok: i === c.answer }; }));
+  var tries = 0, hint = false, over = false;
+  var list = el('div', { class: 'opts' });
+  var btns = opts.map(function(o, i){
+    var b = el('button', { class: 'opt', type: 'button' }, el('span', { class: 'ltr' }, 'АБВГ'.charAt(i)), el('span', null, o.t));
+    b.addEventListener('click', function(){ choose(i); });
+    list.appendChild(b);
+    return b;
+  });
+  var hintBtn = el('button', { class: 'btn ghost small', type: 'button', onclick: useHint }, 'Подсказка факела (−3 балла)');
+  area.appendChild(list);
+  area.appendChild(el('div', { class: 'hintrow' }, hintBtn));
+
+  function lockAll(){ btns.forEach(function(b){ b.disabled = true; }); hintBtn.disabled = true; }
+  function choose(i){
+    if (over || btns[i].disabled) return;
+    tries++;
+    if (opts[i].ok) {
+      over = true;
+      btns[i].classList.add('good');
+      lockAll();
+      fin({ points: Math.max(1, (tries === 1 ? 10 : 5) - (hint ? 3 : 0)), solved: true, first: tries === 1 });
+    } else {
+      btns[i].classList.add('bad');
+      btns[i].disabled = true;
+      ctx.wrong();
+      if (tries >= 2) {
+        over = true;
+        var okIdx = opts.findIndex(function(o){ return o.ok; });
+        btns[okIdx].classList.add('good');
+        lockAll();
+        fin({ points: 0, solved: false, first: false, answer: opts[okIdx].t });
+      } else {
+        ctx.note('Не угадал! Остался один шанс.');
+      }
+    }
+  }
+  function useHint(){
+    if (over || hint) return;
+    var cands = [];
+    opts.forEach(function(o, i){ if (!o.ok && !btns[i].disabled) cands.push(i); });
+    if (cands.length < 2) { ctx.note('Подсказка уже не нужна: остался один неверный вариант.'); return; }
+    var k = pick(cands);
+    btns[k].disabled = true;
+    btns[k].classList.add('out');
+    hint = true;
+    hintBtn.disabled = true;
+    ctx.note('Факел осветил лишний вариант: он неверный.');
+  }
+}
+
+/* --- тип: шифр --- */
+function renderCipher(c, area, fin, ctx){
+  var tries = 0, hint = false, over = false;
+  var legend = el('div', { class: 'legend' }, c.legend.map(function(p){
+    return el('div', { class: 'lg' }, el('span', { html: SHAPES[p[0]], style: 'display:inline-block;width:24px;height:24px' }), '= ' + p[1]);
+  }));
+  var shapeOf = {};
+  c.legend.forEach(function(p){ shapeOf[p[1]] = p[0]; });
+  var code = el('div', { class: 'code', role: 'img', 'aria-label': 'Зашифрованное слово из ' + c.word.length + ' знаков' }, c.word.split('').map(function(ch){
+    return el('div', { class: 'cell', html: SHAPES[shapeOf[ch]] });
+  }));
+  var input = el('input', { id: 'cipherInput', class: 'field', type: 'text', maxlength: '8', autocomplete: 'off', placeholder: 'Слово', 'aria-label': 'Расшифрованное слово' });
+  var check = el('button', { class: 'btn', type: 'button', onclick: submit }, 'Проверить');
+  var hintBtn = el('button', { class: 'btn ghost small', type: 'button', onclick: useHint }, 'Подсказка факела: первая буква (−3 балла)');
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') submit(); });
+  area.appendChild(legend);
+  area.appendChild(code);
+  area.appendChild(el('div', { class: 'cipher-in' }, input, check));
+  area.appendChild(el('div', { class: 'hintrow' }, hintBtn));
+  setTimeout(function(){ try { input.focus({ preventScroll: true }); } catch (e) {} }, 400);
+
+  function lockAll(){ input.disabled = true; check.disabled = true; hintBtn.disabled = true; }
+  function norm(s){ return s.trim().toUpperCase().replace(/Ё/g, 'Е'); }
+  function submit(){
+    if (over) return;
+    var v = norm(input.value);
+    if (!v) { ctx.note('Впиши слово в поле.'); return; }
+    tries++;
+    if (v === c.word) {
+      over = true; lockAll();
+      fin({ points: Math.max(1, (tries === 1 ? 10 : 5) - (hint ? 3 : 0)), solved: true, first: tries === 1 });
+    } else {
+      ctx.wrong();
+      if (tries >= 2) {
+        over = true; lockAll();
+        input.value = c.word;
+        fin({ points: 0, solved: false, first: false, answer: c.word });
+      } else {
+        ctx.note('Не то слово. Сверь знаки с таблицей и попробуй ещё раз.');
+        input.select();
+      }
+    }
+  }
+  function useHint(){
+    if (over || hint) return;
+    hint = true;
+    hintBtn.disabled = true;
+    input.value = c.word.charAt(0);
+    input.focus();
+    ctx.note('Первая буква уже вписана. Допиши остальные.');
+  }
+}
+
+/* --- тип: порядок --- */
+function renderOrder(c, area, fin, ctx){
+  var n = c.items.length, tries = 0, over = false;
+  var slots = [], locked = [], i;
+  for (i = 0; i < n; i++) { slots.push(null); locked.push(false); }
+  var idxs = [];
+  for (i = 0; i < n; i++) idxs.push(i);
+  var pool = shuffle(idxs);
+  var guard = 0;
+  while (pool.every(function(v, k){ return v === k; }) && guard++ < 10) pool = shuffle(idxs);
+
+  var seq = el('ol', { class: 'seq' });
+  var poolBox = el('div', { class: 'pool' });
+  var check = el('button', { class: 'btn', type: 'button', disabled: true, onclick: verify }, 'Проверить порядок');
+  area.appendChild(seq);
+  area.appendChild(poolBox);
+  area.appendChild(check);
+  draw();
+
+  function draw(){
+    seq.replaceChildren.apply(seq, slots.map(function(v, k){
+      var li = el('li', { class: 'slot-o' + (locked[k] ? ' locked' : '') }, el('span', { class: 'no' }, String(k + 1)));
+      if (v == null) {
+        li.appendChild(el('span', { class: 'ph' }, k === slots.indexOf(null) ? 'Нажми на карточку ниже' : ''));
+      } else {
+        var b = el('button', { type: 'button', class: 'oc' + (locked[k] ? ' ok' : ''), disabled: locked[k] || over }, c.items[v]);
+        b.addEventListener('click', function(){ removeAt(k); });
+        li.appendChild(b);
+      }
+      return li;
+    }));
+    poolBox.replaceChildren.apply(poolBox, pool.map(function(v){
+      var b = el('button', { type: 'button', class: 'oc', disabled: over }, c.items[v]);
+      b.addEventListener('click', function(){ addItem(v); });
+      return b;
+    }));
+    check.disabled = over || slots.some(function(v){ return v == null; });
+  }
+  function addItem(v){
+    if (over) return;
+    var k = slots.indexOf(null);
+    if (k < 0) return;
+    slots[k] = v;
+    pool = pool.filter(function(x){ return x !== v; });
+    ctx.note('');
+    draw();
+  }
+  function removeAt(k){
+    if (over || locked[k] || slots[k] == null) return;
+    pool.push(slots[k]);
+    slots[k] = null;
+    draw();
+  }
+  function verify(){
+    if (over) return;
+    tries++;
+    var wrongIdx = [];
+    slots.forEach(function(v, k){ if (v === k) locked[k] = true; else wrongIdx.push(k); });
+    if (!wrongIdx.length) {
+      over = true; draw();
+      fin({ points: tries === 1 ? 10 : 5, solved: true, first: tries === 1 });
+      return;
+    }
+    ctx.wrong();
+    if (tries >= 2) {
+      over = true;
+      for (var k = 0; k < n; k++) { slots[k] = k; locked[k] = true; }
+      pool = [];
+      draw();
+      fin({ points: 0, solved: false, first: false });
+      return;
+    }
+    wrongIdx.forEach(function(k){ pool.push(slots[k]); slots[k] = null; });
+    draw();
+    ctx.note('Часть карточек стоит верно, они закрепились. Расставь остальные заново.');
+  }
+}
+
+/* --- тип: пары --- */
+function renderMatch(c, area, fin, ctx){
+  var n = c.pairs.length, sel = null, done = {}, doneCount = 0, wrong = 0, over = false;
+  var left = c.pairs.map(function(p, i){ return { i: i, t: p[0] }; });
+  var right = shuffle(c.pairs.map(function(p, i){ return { i: i, t: p[1] }; }));
+  var lb = {}, rb = {};
+  var colL = el('div', { class: 'col' }), colR = el('div', { class: 'col' });
+  left.forEach(function(o){
+    var b = el('button', { class: 'mt', type: 'button' }, o.t);
+    b.addEventListener('click', function(){ pickLeft(o.i); });
+    lb[o.i] = b; colL.appendChild(b);
+  });
+  right.forEach(function(o){
+    var b = el('button', { class: 'mt', type: 'button' }, o.t);
+    b.addEventListener('click', function(){ pickRight(o.i); });
+    rb[o.i] = b; colR.appendChild(b);
+  });
+  area.appendChild(el('div', { class: 'pairs' }, colL, colR));
+
+  function clearSel(){ Object.keys(lb).forEach(function(k){ lb[k].classList.remove('sel'); }); }
+  function pickLeft(i){
+    if (over || done[i]) return;
+    clearSel();
+    sel = i;
+    lb[i].classList.add('sel');
+    ctx.note('');
+  }
+  function pickRight(i){
+    if (over || done[i]) return;
+    if (sel == null) { ctx.note('Сначала выбери бога слева.'); return; }
+    if (sel === i) {
+      done[i] = true; doneCount++;
+      lb[i].classList.remove('sel');
+      lb[i].classList.add('ok'); rb[i].classList.add('ok');
+      lb[i].setAttribute('data-n', String(doneCount)); rb[i].setAttribute('data-n', String(doneCount));
+      lb[i].disabled = true; rb[i].disabled = true;
+      sel = null;
+      ctx.note('');
+      if (doneCount === n) {
+        over = true;
+        fin({ points: Math.max(4, 10 - 2 * wrong), solved: true, first: wrong === 0 });
+      }
+    } else {
+      wrong++;
+      ctx.wrong();
+      var rbtn = rb[i];
+      rbtn.classList.add('wrong');
+      setTimeout(function(){ rbtn.classList.remove('wrong'); }, 450);
+      clearSel();
+      sel = null;
+      ctx.note('Это не пара. Выбери бога слева и попробуй снова.');
+    }
+  }
+}
+
+/* --- результат зала --- */
+function finishRoom(){
+  var run = S.run, i = run.room, st = S.rooms[i], r = ROOMS[i];
+  var had = st.symbol, earned = run.score >= NEED;
+  if (run.score >= st.best) { st.best = run.score; st.first = run.first; st.mistakes = run.mistakes; }
+  st.done = true;
+  if (earned) st.symbol = true;
+  S.run = null;
+  var allSym = symbolCount() === ROOMS.length;
+  var halo = null, symIcon = null, reveal;
+  if (earned) {
+    symIcon = icon(r.symbol.icon);
+    reveal = el('div', { class: 'card reveal' },
+      el('div', { class: 'halo' }), symIcon,
+      el('b', null, (had ? 'Символ уже у тебя: ' : 'Символ получен: ') + r.symbol.name),
+      el('p', { class: 'dim' }, r.symbol.text));
+  } else {
+    reveal = el('div', { class: 'card lockmsg' },
+      el('div', { class: 'g-name' }, r.guardian),
+      el('p', { class: 'speech' }, '«Нет, этого мало. Нужно хотя бы ' + NEED + ' баллов. Вернись, повтори урок и попробуй снова!»'));
+  }
+  var buttons = [];
+  if (earned) {
+    if (allSym) buttons.push(el('button', { class: 'btn', type: 'button', onclick: screenDoor }, 'К двери фараона'));
+    else if (i < ROOMS.length - 1) buttons.push(el('button', { class: 'btn', type: 'button', onclick: function(){ startRoom(i + 1); } }, 'Следующий зал'));
+    buttons.push(el('button', { class: 'btn ghost', type: 'button', onclick: screenMap }, 'К карте'));
+  } else {
+    buttons.push(el('button', { class: 'btn', type: 'button', onclick: function(){ startRoom(i); } }, 'Повторить зал'));
+    buttons.push(el('button', { class: 'btn ghost', type: 'button', onclick: screenMap }, 'К карте'));
+  }
+  var node = el('section', { class: 'result' },
+    el('p', { class: 'eyebrow' }, r.title + ': итог'),
+    el('div', { class: 'big-score' }, el('b', null, String(run.score)), el('span', { class: 'dim' }, 'из ' + MAXROOM + ' баллов')),
+    reveal,
+    el('div', { class: 'row', style: 'justify-content:center;margin-top:4px' }, buttons)
+  );
+  show(node, 'roomresult');
+  if (earned && !had) {
+    sfx('sym');
+    setTimeout(function(){ burstFrom(symIcon, 70); }, 350);
+  }
+}
+
+/* --- дверь --- */
+function screenDoor(){
+  S.run = null;
+  var have = symbolCount(), full = have === ROOMS.length;
+  var dslots = ROOMS.map(function(r, i){
+    var cls = 'dslot' + (S.rooms[i].symbol ? ' has' : '') + (S.doorOpened && S.rooms[i].symbol ? ' lit' : '');
+    return el('div', { class: cls, title: r.symbol.name }, icon(r.symbol.icon));
+  });
+  var door = el('div', { class: 'door' + (S.doorOpened ? ' open' : '') }, el('div', { class: 'light' }), el('div', { class: 'half l' }), el('div', { class: 'half r' }));
+  var actions = el('div', { class: 'row', style: 'justify-content:center' });
+  var head = el('h2', { class: 'h2' }, 'Дверь фараона');
+  var lead = el('p', { class: 'lead dim', style: 'margin-top:8px' });
+
+  if (full) {
+    lead.textContent = S.doorOpened ? 'Дверь открыта. Свет ждёт тебя снаружи.' : 'У тебя все пять символов. Вложи их в пазы на двери.';
+    var openBtn = el('button', { class: 'btn', type: 'button' }, S.doorOpened ? 'Выйти на свет' : 'Вложить символы');
+    openBtn.addEventListener('click', function(){
+      if (S.doorOpened) { screenFinal(); return; }
+      openBtn.disabled = true;
+      ritual(dslots, door, openBtn);
+    });
+    actions.appendChild(openBtn);
+    actions.appendChild(el('button', { class: 'btn ghost', type: 'button', onclick: screenMap }, 'К карте'));
+  } else {
+    lead.textContent = 'Дверь не поддаётся. Собрано символов: ' + have + ' из ' + ROOMS.length + '. Вернись в залы, где не хватило баллов.';
+    var missing = el('div', { class: 'missing' });
+    ROOMS.forEach(function(r, i){
+      if (!S.rooms[i].symbol) {
+        missing.appendChild(el('button', { class: 'btn ghost', type: 'button', onclick: function(){ startRoom(i); } }, 'Вернуться: ' + r.title + ' (лучший результат ' + S.rooms[i].best + '/' + MAXROOM + ')'));
+      }
+    });
+    actions.appendChild(el('button', { class: 'btn ghost', type: 'button', onclick: screenMap }, 'К карте'));
+    var node0 = el('section', { style: 'text-align:center' }, head, lead, el('div', { class: 'dslots' }, dslots), door, missing, actions);
+    show(node0, 'door');
+    return;
+  }
+  var node = el('section', { style: 'text-align:center' }, head, lead, el('div', { class: 'dslots' }, dslots), door, actions);
+  show(node, 'door');
+}
+
+function ritual(dslots, door, btn){
+  dslots.forEach(function(d, i){
+    setTimeout(function(){ d.classList.add('lit'); sfx('click'); burstFrom(d, 12); }, 300 + i * 520);
+  });
+  setTimeout(function(){
+    door.classList.add('open');
+    sfx('door');
+    S.doorOpened = true;
+    S.curse = 0;
+    updateHud();
+  }, 300 + dslots.length * 520 + 300);
+  setTimeout(function(){
+    burstFrom(door, 90);
+    btn.textContent = 'Выйти на свет';
+    btn.disabled = false;
+  }, 300 + dslots.length * 520 + 2300);
+}
+
+/* --- финал --- */
+function rankFor(total){
+  if (total >= 135) return { name: 'Верховный жрец', msg: 'Ты знаешь Египет лучше самих фараонов! Проклятие снято навсегда.' };
+  if (total >= 110) return { name: 'Великий писец', msg: 'Почти безупречно. Мудрый Тот гордился бы тобой.' };
+  if (total >= 85) return { name: 'Опытный археолог', msg: 'Хороший результат! Ты многое узнал о Древнем Египте.' };
+  return { name: 'Юный искатель', msg: 'Ты выбрался живым, а это главное! Вернись в залы и улучши результат.' };
+}
+
+function screenFinal(){
+  S.run = null;
+  var total = totalScore(), max = MAXROOM * ROOMS.length;
+  var rank = rankFor(total);
+  var prev = loadBest();
+  var isRecord = total > prev;
+  if (isRecord) saveBest(total);
+  var firsts = S.rooms.reduce(function(s, r){ return s + r.first; }, 0);
+  var node = el('section', { class: 'result' },
+    el('p', { class: 'eyebrow' }, 'Проклятие снято'),
+    el('h2', { class: 'h2' }, 'Ты вышел из гробницы!'),
+    el('div', { class: 'card scroll' },
+      el('p', { class: 'dim' }, S.name + ', твой титул:'),
+      el('div', { class: 'rank' }, rank.name),
+      el('p', { class: 'lead' }, rank.msg),
+      el('div', { class: 'sym-row' }, ROOMS.map(function(r){ return icon(r.symbol.icon); })),
+      el('div', { class: 'stats' },
+        el('div', { class: 'stat' }, el('b', null, total + ' / ' + max), el('span', null, 'баллов')),
+        el('div', { class: 'stat' }, el('b', null, firsts + ' из ' + (ROOMS.length * 3)), el('span', null, 'ответов с первой попытки')),
+        el('div', { class: 'stat' }, el('b', null, String(S.mistakes)), el('span', null, 'ошибок за всю игру'))
+      ),
+      isRecord && prev > 0 ? el('p', { class: 'eyebrow' }, 'Новый рекорд на этом устройстве!') : null
+    ),
+    el('div', { class: 'row', style: 'justify-content:center' },
+      el('button', { class: 'btn', type: 'button', onclick: screenStart }, 'Играть заново'),
+      el('button', { class: 'btn ghost', type: 'button', onclick: screenMap }, 'Улучшить результат'))
+  );
+  show(node, 'final');
+  sfx('sym');
+  var cardEl = $('.scroll', node);
+  [250, 900, 1600].forEach(function(t){ setTimeout(function(){ burstFrom(cardEl, 60); }, t); });
+}
+
+screenStart();
+})();
+</script>
